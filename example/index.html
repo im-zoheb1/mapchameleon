@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapChameleon - Example & Demo</title>
+    
+    <!-- External Library CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin="" />
+    <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦎</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🦎 MapChameleon</h1>
+            <p class="subtitle">A unified mapping library that adapts between Leaflet and MapLibre</p>
+        </div>
+
+        <!-- Introduction Panel -->
+        <div class="info-panel">
+            <h3>Welcome to MapChameleon!</h3>
+            <p>
+                MapChameleon provides a consistent API for both Leaflet and MapLibre mapping libraries. 
+                Switch between providers seamlessly while maintaining the same codebase. 
+                Perfect for applications that need flexibility in mapping solutions.
+            </p>
+        </div>
+
+        <!-- Provider Selection -->
+        <div class="provider-toggle">
+            <h3>Choose Your Map Provider</h3>
+            <div class="provider-option">
+                <input type="radio" id="leaflet" name="provider" value="leaflet" checked>
+                <label for="leaflet">🍃 Leaflet</label>
+            </div>
+            <div class="provider-option">
+                <input type="radio" id="maplibre" name="provider" value="maplibre">
+                <label for="maplibre">🗺️ MapLibre GL</label>
+            </div>
+        </div>
+
+        <!-- Interactive Map Section -->
+        <div class="example-section">
+            <h2>🗺️ Interactive Map Demo</h2>
+            <div id="map" class="map-container">
+                <!-- Map will be rendered here -->
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button id="add-marker" class="btn btn-success">
+                    📍 Add Random Marker
+                </button>
+                <button id="add-polyline" class="btn btn-secondary">
+                    📈 Add Polyline Route
+                </button>
+                <button id="fit-markers" class="btn">
+                    🎯 Fit to Markers
+                </button>
+                <button id="switch-provider" class="btn">
+                    🔄 Switch Provider
+                </button>
+                <button id="clear-map" class="btn btn-danger">
+                    🗑️ Clear Map
+                </button>
+            </div>
+
+            <!-- Status Panel -->
+            <div class="status-panel">
+                <div class="status-item">
+                    <strong>Current Provider</strong>
+                    <div class="status-value" id="current-provider">Leaflet</div>
+                </div>
+                <div class="status-item">
+                    <strong>Markers Added</strong>
+                    <div class="status-value" id="marker-count">0</div>
+                </div>
+                <div class="status-item">
+                    <strong>Polylines Added</strong>
+                    <div class="status-value" id="polyline-count">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Example Section -->
+        <div class="example-section">
+            <h2>💻 Code Example</h2>
+            <p>Here's how easy it is to use MapChameleon in your project:</p>
+            
+            <div class="code-section">
+                <pre class="code-example" id="code-example">// Import MapChameleon
+import { createChameleon } from 'mapchameleon';
+
+// Create a map instance with Leaflet
+const map = createChameleon({
+    provider: 'leaflet',
+    container: 'map',
+    center: [51.505, -0.09],
+    zoom: 13
+});
+
+// Add a marker
+map.addMarker({
+    lat: 51.505,
+    lng: -0.09,
+    popup: 'Hello from MapChameleon!'
+});
+
+// Add a polyline
+map.addPolyline({
+    coordinates: [
+        [51.505, -0.09],
+        [51.51, -0.1],
+        [51.52, -0.08]
+    ],
+    color: '#ff0000',
+    weight: 3
+});
+
+// Clear the map
+map.clear();</pre>
+            </div>
+        </div>
+
+        <!-- Installation & Usage Section -->
+        <div class="example-section">
+            <h2>📦 Installation & Setup</h2>
+            
+            <h3>Install via npm:</h3>
+            <div class="code-section">
+                <pre class="code-example">npm install mapchameleon</pre>
+            </div>
+
+            <h3>Install peer dependencies:</h3>
+            <div class="code-section">
+                <pre class="code-example"># For Leaflet support
+npm install leaflet @types/leaflet
+
+# For MapLibre GL support  
+npm install maplibre-gl</pre>
+            </div>
+
+            <h3>Basic usage in your project:</h3>
+            <div class="code-section">
+                <pre class="code-example">// ES6 modules
+import { createChameleon, MapChameleon } from 'mapchameleon';
+
+// CommonJS
+const { createChameleon } = require('mapchameleon');
+
+// Browser (after building)
+&lt;script src="./dist/index.js">&lt;/script></pre>
+            </div>
+        </div>
+
+        <!-- Provider Comparison -->
+        <div class="example-section">
+            <h2>⚖️ Provider Comparison</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card leaflet">
+                    <h3>🍃 Leaflet</h3>
+                    <ul>
+                        <li>Lightweight (~39KB)</li>
+                        <li>Simple and intuitive API</li>
+                        <li>Extensive plugin ecosystem</li>
+                        <li>Great for basic mapping needs</li>
+                        <li>Excellent browser compatibility</li>
+                        <li>Canvas/SVG rendering</li>
+                        <li>Perfect for traditional web maps</li>
+                    </ul>
+                </div>
+                <div class="comparison-card maplibre">
+                    <h3>🗺️ MapLibre GL</h3>
+                    <ul>
+                        <li>Vector tiles support</li>
+                        <li>WebGL-powered rendering</li>
+                        <li>Better performance for large datasets</li>
+                        <li>Modern styling capabilities</li>
+                        <li>3D terrain support</li>
+                        <li>Smooth animations and transitions</li>
+                        <li>Ideal for complex visualizations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Reference -->
+        <div class="example-section">
+            <h2>📖 API Reference</h2>
+            
+            <h3>MapChameleon Methods</h3>
+            <div class="code-section">
+                <pre class="code-example">// Create map instance
+const map = createChameleon(config);
+
+// Add marker
+map.addMarker({
+    lat: number,
+    lng: number,
+    popup?: string,
+    color?: string
+});
+
+// Add polyline
+map.addPolyline({
+    coordinates: Array<[lat, lng]>,
+    color?: string,
+    weight?: number,
+    opacity?: number,
+    popup?: string
+});
+
+// Clear all markers and polylines
+map.clear();
+
+// Get map bounds
+map.getBounds();
+
+// Fit view to all markers
+map.fitToMarkers();</pre>
+            </div>
+
+            <h3>Configuration Options</h3>
+            <div class="code-section">
+                <pre class="code-example">interface MapConfig {
+    provider: 'leaflet' | 'maplibre';
+    container: string;          // DOM element ID
+    center: [number, number];   // [latitude, longitude]  
+    zoom: number;              // Initial zoom level
+}</pre>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="example-section">
+            <h2>✨ Features</h2>
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h3>🔄 Provider Agnostic</h3>
+                    <ul>
+                        <li>Single API for multiple providers</li>
+                        <li>Easy provider switching</li>
+                        <li>Consistent behavior across providers</li>
+                        <li>Future-proof your mapping code</li>
+                    </ul>
+                </div>
+                <div class="comparison-card">
+                    <h3>🚀 Performance</h3>
+                    <ul>
+                        <li>Optimized for each provider</li>
+                        <li>Minimal overhead</li>
+                        <li>Tree-shakeable build</li>
+                        <li>TypeScript support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="info-panel">
+            <h3>🔗 Links & Resources</h3>
+            <p>
+                <strong>GitHub:</strong> <a href="https://github.com/im-zoheb1/mapchameleon" target="_blank" style="color: #fff;">https://github.com/im-zoheb1/mapchameleon</a><br>
+                <strong>NPM:</strong> <a href="https://www.npmjs.com/package/mapchameleon" target="_blank" style="color: #fff;">https://www.npmjs.com/package/mapchameleon</a><br>
+                <strong>Issues:</strong> <a href="https://github.com/im-zoheb1/mapchameleon/issues" target="_blank" style="color: #fff;">Report bugs & feature requests</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- External Library Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+
+    <!-- Your MapChameleon Library -->
+    <!-- Uncomment when your library is built -->
+    <!-- <script src="../dist/index.js"></script> -->
+
+    <!-- Demo Script -->
+    <script src="script.js"></script>
+</body>
+</html>

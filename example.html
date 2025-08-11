@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapChameleon Example</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- MapLibre CSS -->
+    <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .example-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .map-container {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .controls {
+            margin: 15px 0;
+        }
+        
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #005a87;
+        }
+        
+        .info-panel {
+            background: #e8f4fd;
+            border-left: 4px solid #007cba;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        pre {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+        }
+        
+        .provider-toggle {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .provider-toggle label {
+            margin: 0 10px;
+            font-weight: bold;
+        }
+        
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦎 MapChameleon Example</h1>
+        
+        <div class="info-panel">
+            <h3>About MapChameleon</h3>
+            <p>MapChameleon is a unified mapping library that provides a consistent API for both Leaflet and MapLibre mapping libraries. Switch between providers seamlessly!</p>
+        </div>
+        
+        <div class="provider-toggle">
+            <label>
+                <input type="radio" name="provider" value="leaflet" checked>
+                Leaflet
+            </label>
+            <label>
+                <input type="radio" name="provider" value="maplibre">
+                MapLibre
+            </label>
+        </div>
+        
+        <div class="example-section">
+            <h2>Interactive Map Example</h2>
+            <div id="map" class="map-container"></div>
+            
+            <div class="controls">
+                <button onclick="addRandomMarker()">Add Random Marker</button>
+                <button onclick="addPolyline()">Add Polyline</button>
+                <button onclick="clearMap()">Clear Map</button>
+                <button onclick="switchProvider()">Switch Provider</button>
+            </div>
+            
+            <div class="info-panel">
+                <strong>Current Provider:</strong> <span id="current-provider">Leaflet</span><br>
+                <strong>Markers:</strong> <span id="marker-count">0</span><br>
+                <strong>Polylines:</strong> <span id="polyline-count">0</span>
+            </div>
+        </div>
+        
+        <div class="example-section">
+            <h2>Code Example</h2>
+            <pre><code id="code-example">
+// Import MapChameleon
+import { createChameleon } from 'mapchameleon';
+
+// Create a map instance with Leaflet
+const map = createChameleon({
+    provider: 'leaflet',
+    container: 'map',
+    center: [51.505, -0.09],
+    zoom: 13
+});
+
+// Add a marker
+map.addMarker({
+    lat: 51.505,
+    lng: -0.09,
+    popup: 'Hello from MapChameleon!'
+});
+
+// Add a polyline
+map.addPolyline({
+    coordinates: [
+        [51.505, -0.09],
+        [51.51, -0.1],
+        [51.52, -0.08]
+    ],
+    color: '#ff0000',
+    weight: 3
+});
+            </code></pre>
+        </div>
+        
+        <div class="example-section">
+            <h2>Provider Comparison</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h3>🍃 Leaflet</h3>
+                    <ul>
+                        <li>Lightweight and simple</li>
+                        <li>Great for basic mapping needs</li>
+                        <li>Extensive plugin ecosystem</li>
+                        <li>Perfect for traditional web maps</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>🗺️ MapLibre</h3>
+                    <ul>
+                        <li>Vector tiles support</li>
+                        <li>WebGL rendering</li>
+                        <li>Better performance for large datasets</li>
+                        <li>Modern styling capabilities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+    
+    <!-- Your MapChameleon library (uncomment when built) -->
+    <!-- <script src="./dist/index.js"></script> -->
+    
+    <script>
+        // Mock implementation for demonstration
+        // Replace this with actual MapChameleon import when the library is built
+        
+        let currentMap = null;
+        let markerCount = 0;
+        let polylineCount = 0;
+        let currentProvider = 'leaflet';
+        
+        // Mock MapChameleon class for demonstration
+        class MockMapChameleon {
+            constructor(config) {
+                this.config = config;
+                this.provider = config.provider;
+                this.markers = [];
+                this.polylines = [];
+                this.initMap();
+            }
+            
+            initMap() {
+                if (this.provider === 'leaflet') {
+                    this.map = L.map(this.config.container).setView(this.config.center, this.config.zoom);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(this.map);
+                } else if (this.provider === 'maplibre') {
+                    this.map = new maplibregl.Map({
+                        container: this.config.container,
+                        style: 'https://demotiles.maplibre.org/style.json',
+                        center: [this.config.center[1], this.config.center[0]],
+                        zoom: this.config.zoom
+                    });
+                }
+            }
+            
+            addMarker(options) {
+                if (this.provider === 'leaflet') {
+                    const marker = L.marker([options.lat, options.lng]).addTo(this.map);
+                    if (options.popup) {
+                        marker.bindPopup(options.popup);
+                    }
+                    this.markers.push(marker);
+                    return marker;
+                } else if (this.provider === 'maplibre') {
+                    const marker = new maplibregl.Marker()
+                        .setLngLat([options.lng, options.lat])
+                        .addTo(this.map);
+                    if (options.popup) {
+                        marker.setPopup(new maplibregl.Popup().setText(options.popup));
+                    }
+                    this.markers.push(marker);
+                    return marker;
+                }
+            }
+            
+            addPolyline(options) {
+                if (this.provider === 'leaflet') {
+                    const polyline = L.polyline(options.coordinates, {
+                        color: options.color || '#3388ff',
+                        weight: options.weight || 3
+                    }).addTo(this.map);
+                    this.polylines.push(polyline);
+                    return polyline;
+                } else if (this.provider === 'maplibre') {
+                    // MapLibre implementation would be more complex
+                    // This is a simplified version
+                    console.log('Polyline added to MapLibre map', options);
+                    this.polylines.push(options);
+                }
+            }
+            
+            clear() {
+                this.markers.forEach(marker => {
+                    if (this.provider === 'leaflet') {
+                        this.map.removeLayer(marker);
+                    } else {
+                        marker.remove();
+                    }
+                });
+                this.polylines.forEach(polyline => {
+                    if (this.provider === 'leaflet') {
+                        this.map.removeLayer(polyline);
+                    }
+                });
+                this.markers = [];
+                this.polylines = [];
+            }
+        }
+        
+        function createChameleon(config) {
+            return new MockMapChameleon(config);
+        }
+        
+        // Initialize the map
+        function initMap() {
+            const mapContainer = document.getElementById('map');
+            if (currentMap) {
+                currentMap.clear();
+                mapContainer.innerHTML = '';
+            }
+            
+            currentMap = createChameleon({
+                provider: currentProvider,
+                container: 'map',
+                center: [51.505, -0.09],
+                zoom: 13
+            });
+            
+            updateUI();
+        }
+        
+        function addRandomMarker() {
+            const lat = 51.505 + (Math.random() - 0.5) * 0.02;
+            const lng = -0.09 + (Math.random() - 0.5) * 0.02;
+            
+            currentMap.addMarker({
+                lat: lat,
+                lng: lng,
+                popup: `Marker #${markerCount + 1}`
+            });
+            
+            markerCount++;
+            updateUI();
+        }
+        
+        function addPolyline() {
+            const coordinates = [
+                [51.505, -0.09],
+                [51.51, -0.1],
+                [51.52, -0.08],
+                [51.515, -0.075]
+            ];
+            
+            currentMap.addPolyline({
+                coordinates: coordinates,
+                color: `hsl(${Math.random() * 360}, 70%, 50%)`,
+                weight: 3
+            });
+            
+            polylineCount++;
+            updateUI();
+        }
+        
+        function clearMap() {
+            currentMap.clear();
+            markerCount = 0;
+            polylineCount = 0;
+            updateUI();
+        }
+        
+        function switchProvider() {
+            currentProvider = currentProvider === 'leaflet' ? 'maplibre' : 'leaflet';
+            document.querySelector(`input[value="${currentProvider}"]`).checked = true;
+            markerCount = 0;
+            polylineCount = 0;
+            initMap();
+        }
+        
+        function updateUI() {
+            document.getElementById('current-provider').textContent = 
+                currentProvider.charAt(0).toUpperCase() + currentProvider.slice(1);
+            document.getElementById('marker-count').textContent = markerCount;
+            document.getElementById('polyline-count').textContent = polylineCount;
+        }
+        
+        // Handle provider radio button changes
+        document.querySelectorAll('input[name="provider"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentProvider = e.target.value;
+                markerCount = 0;
+                polylineCount = 0;
+                initMap();
+            });
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initMap);
+    </script>
+</body>
+</html>
