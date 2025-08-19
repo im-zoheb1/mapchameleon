@@ -1,4 +1,4 @@
-import { MapConfig, MarkerOptions, PolylineOptions } from '../types';
+import { MapConfig } from '../types';
 import { LeafletProvider } from '../providers/leaflet';
 import { MapLibreProvider } from '../providers/maplibre';
 import { ArcGISProvider } from '../providers/arcgis';

@@ -1,5 +1,5 @@
 export interface MapConfig {
-  provider: 'leaflet' | 'maplibre';
+  provider: 'leaflet' | 'maplibre' | 'arcgis';
   container: string | HTMLElement;
   center: [number, number];
   zoom: number;
