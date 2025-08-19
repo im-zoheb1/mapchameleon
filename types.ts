@@ -2,6 +2,7 @@
 // Provider Types
 // /////////////////////////////
 export interface ProviderConfig {
+  initialize(elementId: string, config?: MapConfig): void;
   createMarker(options: MarkerOptions): any;
   removeMarker(marker: any): void;
   createPolyline(options: PolylineOptions): any;

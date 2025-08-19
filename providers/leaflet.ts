@@ -1,7 +1,22 @@
-import { ProviderConfig, MarkerOptions, PolylineOptions } from '../types';
+import { ProviderConfig, MarkerOptions, PolylineOptions, MapConfig } from '../types';
 
 export class LeafletProvider implements ProviderConfig {
+  private map: any;
+
   constructor(config: any) {}
+
+  initialize(elementId: string, config?: MapConfig): void {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      throw new Error(`Element with id '${elementId}' not found`);
+    }
+    
+    // Initialize Leaflet map
+    // this.map = L.map(elementId, {
+    //   center: config?.center || [0, 0],
+    //   zoom: config?.zoom || 10
+    // });
+  }
 
   createMarker(options: MarkerOptions): any {
     // Leaflet marker implementation

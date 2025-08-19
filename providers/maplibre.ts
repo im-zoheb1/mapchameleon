@@ -1,7 +1,24 @@
-import { ProviderConfig, MarkerOptions, PolylineOptions } from '../types';
+import { ProviderConfig, MarkerOptions, PolylineOptions, MapConfig } from '../types';
 
 export class MapLibreProvider implements ProviderConfig {
+  private map: any;
+
   constructor(config: any) {}
+
+  initialize(elementId: string, config?: MapConfig): void {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      throw new Error(`Element with id '${elementId}' not found`);
+    }
+    
+    // Initialize MapLibre map
+    // this.map = new maplibregl.Map({
+    //   container: elementId,
+    //   style: config?.style || 'https://demotiles.maplibre.org/style.json',
+    //   center: config?.center || [0, 0],
+    //   zoom: config?.zoom || 10
+    // });
+  }
 
   createMarker(options: MarkerOptions): any {
     // MapLibre marker implementation

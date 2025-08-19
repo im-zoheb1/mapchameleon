@@ -1,7 +1,30 @@
-import { ProviderConfig, MarkerOptions, PolylineOptions } from '../types';
+import { ProviderConfig, MarkerOptions, PolylineOptions, MapConfig } from '../types';
 
 export class ArcGISProvider implements ProviderConfig {
+  private map: any;
+
   constructor(config: any) {}
+
+  initialize(elementId: string, config?: MapConfig): void {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      throw new Error(`Element with id '${elementId}' not found`);
+    }
+    
+    // Initialize ArcGIS map
+    // const map = new Map({
+    //   basemap: config?.style || "streets-navigation-vector"
+    // });
+    // 
+    // const view = new MapView({
+    //   container: elementId,
+    //   map: map,
+    //   center: config?.center || [0, 0],
+    //   zoom: config?.zoom || 10
+    // });
+    // 
+    // this.map = view;
+  }
 
   createMarker(options: MarkerOptions): any {
     // ArcGIS marker implementation
