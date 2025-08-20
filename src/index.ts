@@ -1,10 +1,10 @@
-import { MapConfig } from '../types';
+import { MapConfig, MarkerOptions, PolylineOptions, ProviderConfig } from '../types';
 import { LeafletProvider } from '../providers/leaflet';
 import { MapLibreProvider } from '../providers/maplibre';
 import { ArcGISProvider } from '../providers/arcgis';
 
 export class MapChameleon {
-  private provider: any;
+  private provider: ProviderConfig;
 
   constructor(config: MapConfig) {
     if (config.provider === 'leaflet') {
@@ -16,17 +16,45 @@ export class MapChameleon {
     } else {
       throw new Error(`Unsupported provider: ${config.provider}`);
     }
+
+    this.provider.initialize(
+      typeof config.container === 'string' ? config.container : config.container.id || 'map',
+      config
+    );
   }
 
-  /* addMarker(options: MarkerOptions) {
-    return this.provider.addMarker(options);
+  addMarker(options: MarkerOptions) {
+    return this.provider.createMarker(options);
+  }
+
+  removeMarker(marker: any) {
+    return this.provider.removeMarker(marker);
   }
 
   addPolyline(options: PolylineOptions) {
-    return this.provider.addPolyline(options);
-    } */
+    return this.provider.createPolyline(options);
+  }
 
-  // Add more unified methods...
+  removePolyline(polyline: any) {
+    return this.provider.removePolyline(polyline);
+  }
+
+  setView(center: [number, number], zoom: number) {
+    return this.provider.setView(center, zoom);
+  }
+
+  getCenter(): [number, number] {
+    return this.provider.getCenter();
+  }
+
+  getZoom(): number {
+    return this.provider.getZoom();
+  }
+
+  clear() {
+    // This method would need to be implemented by tracking markers/polylines
+    // For now, we'll leave it as a placeholder
+  }
 }
 
 export function createChameleon(config: MapConfig): MapChameleon {

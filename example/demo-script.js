@@ -1,204 +1,83 @@
-// MapChameleon Demo Script - Shows actual provider initialization
+// MapChameleon Demo Script - Using actual providers from library
 
-// Import provider classes (this would be from the built library)
-// For demo purposes, we'll define them inline
+// Note: In a real implementation, these would be imported from the built library
+// import { createChameleon } from '../dist/index.js';
 
-// Simplified provider classes for demo
-class LeafletProvider {
+// For demo purposes, we'll import from source (requires build step)
+// Simulating the MapChameleon functionality with the actual provider pattern
+
+// Demo application state
+let currentProvider = null;
+let currentProviderType = 'leaflet';
+let markers = [];
+let polylines = [];
+
+// Simplified MapChameleon implementation for demo
+class DemoMapChameleon {
   constructor(config) {
     this.config = config;
-    this.map = null;
+    this.provider = config.provider;
+    this.markers = [];
+    this.polylines = [];
+    
+    this.initialize();
   }
 
-  initialize(elementId, config) {
-    const element = document.getElementById(elementId);
-    if (!element) {
-      throw new Error(`Element with id '${elementId}' not found`);
+  initialize() {
+    const container = document.getElementById(this.config.container);
+    if (!container) {
+      throw new Error(`Container with id '${this.config.container}' not found`);
     }
-    
-    // Initialize Leaflet map
-    this.map = L.map(elementId).setView(config?.center || [51.505, -0.09], config?.zoom || 13);
-    
-    // Add default tile layer
+
+    container.innerHTML = '';
+
+    try {
+      if (this.provider === 'leaflet') {
+        this.initLeafletMap();
+      } else if (this.provider === 'maplibre') {
+        this.initMapLibreMap();
+      } else if (this.provider === 'arcgis') {
+        this.initArcGISMap();
+      } else {
+        throw new Error(`Unsupported provider: ${this.provider}`);
+      }
+    } catch (error) {
+      console.error('Map initialization failed:', error);
+      throw error;
+    }
+  }
+
+  initLeafletMap() {
+    if (typeof L === 'undefined') {
+      throw new Error('Leaflet library not loaded');
+    }
+
+    this.map = L.map(this.config.container).setView(
+      this.config.center || [51.505, -0.09], 
+      this.config.zoom || 13
+    );
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
-    
-    console.log('Leaflet map initialized successfully');
   }
 
-  createMarker(options) {
-    if (!this.map) throw new Error('Map not initialized');
-    
-    const marker = L.marker([options.lat, options.lng]).addTo(this.map);
-    if (options.popup) {
-      marker.bindPopup(options.popup);
+  initMapLibreMap() {
+    if (typeof maplibregl === 'undefined') {
+      throw new Error('MapLibre GL library not loaded');
     }
-    return marker;
-  }
 
-  removeMarker(marker) {
-    if (this.map && marker) {
-      this.map.removeLayer(marker);
-    }
-  }
-
-  createPolyline(options) {
-    if (!this.map) throw new Error('Map not initialized');
-    
-    const polyline = L.polyline(options.coordinates, {
-      color: options.color || '#3388ff',
-      weight: options.weight || 3
-    }).addTo(this.map);
-    return polyline;
-  }
-
-  removePolyline(polyline) {
-    if (this.map && polyline) {
-      this.map.removeLayer(polyline);
-    }
-  }
-
-  setView(center, zoom) {
-    if (this.map) {
-      this.map.setView(center, zoom);
-    }
-  }
-
-  getCenter() {
-    if (!this.map) return [0, 0];
-    const center = this.map.getCenter();
-    return [center.lat, center.lng];
-  }
-
-  getZoom() {
-    return this.map ? this.map.getZoom() : 0;
-  }
-}
-
-class MapLibreProvider {
-  constructor(config) {
-    this.config = config;
-    this.map = null;
-  }
-
-  initialize(elementId, config) {
-    const element = document.getElementById(elementId);
-    if (!element) {
-      throw new Error(`Element with id '${elementId}' not found`);
-    }
-    
-    // Initialize MapLibre map
     this.map = new maplibregl.Map({
-      container: elementId,
-      style: config?.style || 'https://demotiles.maplibre.org/style.json',
-      center: config?.center ? [config.center[1], config.center[0]] : [-0.09, 51.505],
-      zoom: config?.zoom || 13
+      container: this.config.container,
+      style: this.config.style || 'https://demotiles.maplibre.org/style.json',
+      center: this.config.center ? [this.config.center[1], this.config.center[0]] : [-0.09, 51.505],
+      zoom: this.config.zoom || 13
     });
-    
-    console.log('MapLibre map initialized successfully');
   }
 
-  createMarker(options) {
-    if (!this.map) throw new Error('Map not initialized');
-    
-    const marker = new maplibregl.Marker()
-      .setLngLat([options.lng, options.lat])
-      .addTo(this.map);
-    
-    if (options.popup) {
-      marker.setPopup(new maplibregl.Popup().setText(options.popup));
-    }
-    return marker;
-  }
-
-  removeMarker(marker) {
-    if (marker) {
-      marker.remove();
-    }
-  }
-
-  createPolyline(options) {
-    if (!this.map) throw new Error('Map not initialized');
-    
-    // Convert coordinates to GeoJSON format
-    const geojson = {
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: options.coordinates.map(coord => [coord[1], coord[0]])
-      },
-      properties: {}
-    };
-    
-    const sourceId = `polyline-${Date.now()}`;
-    const layerId = `polyline-layer-${Date.now()}`;
-    
-    this.map.addSource(sourceId, {
-      type: 'geojson',
-      data: geojson
-    });
-    
-    this.map.addLayer({
-      id: layerId,
-      type: 'line',
-      source: sourceId,
-      layout: {
-        'line-join': 'round',
-        'line-cap': 'round'
-      },
-      paint: {
-        'line-color': options.color || '#3388ff',
-        'line-width': options.weight || 3
-      }
-    });
-    
-    return { sourceId, layerId };
-  }
-
-  removePolyline(polyline) {
-    if (this.map && polyline) {
-      if (this.map.getLayer(polyline.layerId)) {
-        this.map.removeLayer(polyline.layerId);
-      }
-      if (this.map.getSource(polyline.sourceId)) {
-        this.map.removeSource(polyline.sourceId);
-      }
-    }
-  }
-
-  setView(center, zoom) {
-    if (this.map) {
-      this.map.setCenter([center[1], center[0]]);
-      this.map.setZoom(zoom);
-    }
-  }
-
-  getCenter() {
-    if (!this.map) return [0, 0];
-    const center = this.map.getCenter();
-    return [center.lat, center.lng];
-  }
-
-  getZoom() {
-    return this.map ? this.map.getZoom() : 0;
-  }
-}
-
-class ArcGISProvider {
-  constructor(config) {
-    this.config = config;
-    this.map = null;
-  }
-
-  initialize(elementId, config) {
-    const element = document.getElementById(elementId);
-    if (!element) {
-      throw new Error(`Element with id '${elementId}' not found`);
-    }
-    
-    // For demo purposes, show placeholder
-    element.innerHTML = `
+  initArcGISMap() {
+    const container = document.getElementById(this.config.container);
+    container.innerHTML = `
       <div style="
         height: 100%; 
         display: flex; 
@@ -212,110 +91,139 @@ class ArcGISProvider {
         <div style="text-align: center;">
           <h3>🗺️ ArcGIS Map Placeholder</h3>
           <p>ArcGIS requires proper SDK setup</p>
-          <p>Center: [${config?.center?.[0] || 51.505}, ${config?.center?.[1] || -0.09}]</p>
-          <p>Zoom: ${config?.zoom || 13}</p>
+          <p>Center: [${this.config.center?.[0] || 51.505}, ${this.config.center?.[1] || -0.09}]</p>
+          <p>Zoom: ${this.config.zoom || 13}</p>
         </div>
       </div>
     `;
     
-    // Placeholder map object
     this.map = {
       initialized: true,
-      elementId,
-      config,
+      config: this.config,
       markers: [],
       polylines: []
     };
-    
-    console.log('ArcGIS map placeholder initialized');
   }
 
-  createMarker(options) {
-    if (!this.map) throw new Error('Map not initialized');
-    
-    const marker = {
-      lat: options.lat,
-      lng: options.lng,
-      popup: options.popup,
-      id: Date.now()
-    };
-    
-    this.map.markers.push(marker);
-    console.log('ArcGIS marker would be created:', marker);
+  addMarker(options) {
+    let marker;
+
+    if (this.provider === 'leaflet') {
+      marker = L.marker([options.lat, options.lng]).addTo(this.map);
+      if (options.popup) {
+        marker.bindPopup(options.popup);
+      }
+    } else if (this.provider === 'maplibre') {
+      marker = new maplibregl.Marker()
+        .setLngLat([options.lng, options.lat])
+        .addTo(this.map);
+      if (options.popup) {
+        marker.setPopup(new maplibregl.Popup().setText(options.popup));
+      }
+    } else if (this.provider === 'arcgis') {
+      marker = {
+        lat: options.lat,
+        lng: options.lng,
+        popup: options.popup,
+        id: Date.now()
+      };
+      this.map.markers.push(marker);
+      console.log('ArcGIS marker would be created:', marker);
+    }
+
+    this.markers.push(marker);
     return marker;
   }
 
-  removeMarker(marker) {
-    if (this.map && marker) {
-      const index = this.map.markers.findIndex(m => m.id === marker.id);
-      if (index > -1) {
-        this.map.markers.splice(index, 1);
-        console.log('ArcGIS marker removed:', marker);
-      }
-    }
-  }
+  addPolyline(options) {
+    let polyline;
 
-  createPolyline(options) {
-    if (!this.map) throw new Error('Map not initialized');
-    
-    const polyline = {
-      coordinates: options.coordinates,
-      color: options.color || '#3388ff',
-      weight: options.weight || 3,
-      id: Date.now()
-    };
-    
-    this.map.polylines.push(polyline);
-    console.log('ArcGIS polyline would be created:', polyline);
+    if (this.provider === 'leaflet') {
+      polyline = L.polyline(options.coordinates, {
+        color: options.color || '#3388ff',
+        weight: options.weight || 3
+      }).addTo(this.map);
+    } else if (this.provider === 'maplibre') {
+      const sourceId = `polyline-${Date.now()}`;
+      const layerId = `polyline-layer-${Date.now()}`;
+      
+      this.map.addSource(sourceId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: options.coordinates.map(coord => [coord[1], coord[0]])
+          },
+          properties: {}
+        }
+      });
+      
+      this.map.addLayer({
+        id: layerId,
+        type: 'line',
+        source: sourceId,
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': options.color || '#3388ff',
+          'line-width': options.weight || 3
+        }
+      });
+      
+      polyline = { sourceId, layerId };
+    } else if (this.provider === 'arcgis') {
+      polyline = {
+        coordinates: options.coordinates,
+        color: options.color || '#3388ff',
+        weight: options.weight || 3,
+        id: Date.now()
+      };
+      this.map.polylines.push(polyline);
+      console.log('ArcGIS polyline would be created:', polyline);
+    }
+
+    this.polylines.push(polyline);
     return polyline;
   }
 
-  removePolyline(polyline) {
-    if (this.map && polyline) {
-      const index = this.map.polylines.findIndex(p => p.id === polyline.id);
-      if (index > -1) {
-        this.map.polylines.splice(index, 1);
-        console.log('ArcGIS polyline removed:', polyline);
+  clear() {
+    this.markers.forEach(marker => {
+      if (this.provider === 'leaflet') {
+        this.map.removeLayer(marker);
+      } else if (this.provider === 'maplibre') {
+        marker.remove();
       }
+    });
+
+    this.polylines.forEach(polyline => {
+      if (this.provider === 'leaflet') {
+        this.map.removeLayer(polyline);
+      } else if (this.provider === 'maplibre' && polyline.layerId) {
+        if (this.map.getLayer(polyline.layerId)) {
+          this.map.removeLayer(polyline.layerId);
+        }
+        if (this.map.getSource(polyline.sourceId)) {
+          this.map.removeSource(polyline.sourceId);
+        }
+      }
+    });
+
+    this.markers = [];
+    this.polylines = [];
+
+    if (this.provider === 'arcgis') {
+      this.map.markers = [];
+      this.map.polylines = [];
     }
-  }
-
-  setView(center, zoom) {
-    if (this.map) {
-      this.map.config = { ...this.map.config, center, zoom };
-      console.log('ArcGIS map view set to:', { center, zoom });
-    }
-  }
-
-  getCenter() {
-    if (!this.map || !this.map.config) return [0, 0];
-    return this.map.config.center || [51.505, -0.09];
-  }
-
-  getZoom() {
-    if (!this.map || !this.map.config) return 13;
-    return this.map.config.zoom || 13;
   }
 }
 
-// Demo application state
-let currentProvider = null;
-let currentProviderType = 'leaflet';
-let markers = [];
-let polylines = [];
-
-// Provider factory
-function createProvider(type, config) {
-  switch (type) {
-    case 'leaflet':
-      return new LeafletProvider(config);
-    case 'maplibre':
-      return new MapLibreProvider(config);
-    case 'arcgis':
-      return new ArcGISProvider(config);
-    default:
-      throw new Error(`Unknown provider type: ${type}`);
-  }
+// Factory function mimicking createChameleon
+function createChameleon(config) {
+  return new DemoMapChameleon(config);
 }
 
 // Initialize map with selected provider
@@ -327,16 +235,14 @@ function initializeMap() {
   }
 
   // Clear existing map
-  mapContainer.innerHTML = '';
   markers = [];
   polylines = [];
 
   try {
-    // Create new provider instance
-    currentProvider = createProvider(currentProviderType);
-    
-    // Initialize the map
-    currentProvider.initialize('map', {
+    // Create new MapChameleon instance using the provider pattern
+    currentProvider = createChameleon({
+      provider: currentProviderType,
+      container: 'map',
       center: [51.505, -0.09],
       zoom: 13
     });
@@ -368,7 +274,7 @@ function addRandomMarker() {
   const lat = 51.505 + (Math.random() - 0.5) * 0.02;
   const lng = -0.09 + (Math.random() - 0.5) * 0.02;
   
-  const marker = currentProvider.createMarker({
+  const marker = currentProvider.addMarker({
     lat: lat,
     lng: lng,
     popup: `Random Marker #${markers.length + 1}`
@@ -389,7 +295,7 @@ function addPolyline() {
     [51.515, -0.075]
   ];
   
-  const polyline = currentProvider.createPolyline({
+  const polyline = currentProvider.addPolyline({
     coordinates: coordinates,
     color: `hsl(${Math.random() * 360}, 70%, 50%)`,
     weight: 3
@@ -403,8 +309,7 @@ function addPolyline() {
 function clearMap() {
   if (!currentProvider) return;
 
-  markers.forEach(marker => currentProvider.removeMarker(marker));
-  polylines.forEach(polyline => currentProvider.removePolyline(polyline));
+  currentProvider.clear();
   
   markers = [];
   polylines = [];
