@@ -10,6 +10,7 @@
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
           crossorigin="" />
     <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
     
     <!-- Custom Styles -->
     <link rel="stylesheet" href="styles.css">
@@ -45,6 +46,10 @@
             <div class="provider-option">
                 <input type="radio" id="maplibre" name="provider" value="maplibre">
                 <label for="maplibre">🗺️ MapLibre GL</label>
+            </div>
+            <div class="provider-option">
+                <input type="radio" id="arcgis" name="provider" value="arcgis">
+                <label for="arcgis">🌍 ArcGIS</label>
             </div>
         </div>
 
@@ -190,6 +195,18 @@ const { createChameleon } = require('mapchameleon');
                         <li>Ideal for complex visualizations</li>
                     </ul>
                 </div>
+                <div class="comparison-card arcgis">
+                    <h3>🌍 ArcGIS</h3>
+                    <ul>
+                        <li>Enterprise-grade mapping platform</li>
+                        <li>Rich geospatial analysis capabilities</li>
+                        <li>Extensive basemap options</li>
+                        <li>Integration with ArcGIS ecosystem</li>
+                        <li>Advanced geocoding services</li>
+                        <li>Professional GIS workflows</li>
+                        <li>Robust data visualization tools</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -281,12 +298,13 @@ map.fitToMarkers();</pre>
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
     <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+    <script src="https://js.arcgis.com/4.31/"></script>
 
     <!-- Your MapChameleon Library -->
     <!-- Uncomment when your library is built -->
     <!-- <script src="../dist/index.js"></script> -->
 
     <!-- Demo Script -->
-    <script src="script.js"></script>
+    <script src="demo-script.js"></script>
 </body>
 </html>

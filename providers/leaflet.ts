@@ -12,39 +12,59 @@ export class LeafletProvider implements ProviderConfig {
     }
     
     // Initialize Leaflet map
-    // this.map = L.map(elementId, {
-    //   center: config?.center || [0, 0],
-    //   zoom: config?.zoom || 10
-    // });
+    this.map = (window as any).L.map(elementId).setView(config?.center || [51.505, -0.09], config?.zoom || 13);
+    
+    // Add default tile layer
+    (window as any).L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(this.map);
   }
 
   createMarker(options: MarkerOptions): any {
-    // Leaflet marker implementation
+    if (!this.map) throw new Error('Map not initialized');
+    
+    const marker = (window as any).L.marker([options.lat, options.lng]).addTo(this.map);
+    if (options.popup) {
+      marker.bindPopup(options.popup);
+    }
+    return marker;
   }
 
   removeMarker(marker: any): void {
-    // Remove Leaflet marker
+    if (this.map && marker) {
+      this.map.removeLayer(marker);
+    }
   }
 
   createPolyline(options: PolylineOptions): any {
-    // Leaflet polyline implementation
+    if (!this.map) throw new Error('Map not initialized');
+    
+    const polyline = (window as any).L.polyline(options.coordinates, {
+      color: options.color || '#3388ff',
+      weight: options.weight || 3
+    }).addTo(this.map);
+    return polyline;
   }
 
   removePolyline(polyline: any): void {
-    // Remove Leaflet polyline
+    if (this.map && polyline) {
+      this.map.removeLayer(polyline);
+    }
   }
 
   setView(center: [number, number], zoom: number): void {
-    // Set Leaflet map view
+    if (this.map) {
+      this.map.setView(center, zoom);
+    }
   }
 
   getCenter(): [number, number] {
-    // Get Leaflet map center
-    return [0, 0];
+    if (!this.map) return [0, 0];
+    const center = this.map.getCenter();
+    return [center.lat, center.lng];
   }
 
   getZoom(): number {
-    // Get Leaflet map zoom
-    return 0;
+    return this.map ? this.map.getZoom() : 0;
   }
 }

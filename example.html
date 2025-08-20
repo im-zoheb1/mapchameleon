@@ -11,6 +11,9 @@
     <!-- MapLibre CSS -->
     <link href="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.css" rel="stylesheet" />
     
+    <!-- ArcGIS CSS -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.31/esri/themes/light/main.css" />
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -111,6 +114,10 @@
                 <input type="radio" name="provider" value="maplibre">
                 MapLibre
             </label>
+            <label>
+                <input type="radio" name="provider" value="arcgis">
+                ArcGIS
+            </label>
         </div>
         
         <div class="example-section">
@@ -193,6 +200,7 @@ map.addPolyline({
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/maplibre-gl@5.6.2/dist/maplibre-gl.js"></script>
+    <script src="https://js.arcgis.com/4.31/"></script>
     
     <!-- Your MapChameleon library (uncomment when built) -->
     <!-- <script src="./dist/index.js"></script> -->
@@ -229,6 +237,28 @@ map.addPolyline({
                         center: [this.config.center[1], this.config.center[0]],
                         zoom: this.config.zoom
                     });
+                } else if (this.provider === 'arcgis') {
+                    const container = document.getElementById(this.config.container);
+                    container.innerHTML = `
+                        <div style="
+                            height: 100%; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            background: #f0f0f0; 
+                            border: 2px dashed #ccc;
+                            font-family: Arial, sans-serif;
+                            color: #666;
+                        ">
+                            <div style="text-align: center;">
+                                <h3>🌍 ArcGIS Map Placeholder</h3>
+                                <p>ArcGIS requires proper SDK setup</p>
+                                <p>Center: [${this.config.center[0]}, ${this.config.center[1]}]</p>
+                                <p>Zoom: ${this.config.zoom}</p>
+                            </div>
+                        </div>
+                    `;
+                    this.map = { placeholder: true };
                 }
             }
             
@@ -348,7 +378,10 @@ map.addPolyline({
         }
         
         function switchProvider() {
-            currentProvider = currentProvider === 'leaflet' ? 'maplibre' : 'leaflet';
+            const providers = ['leaflet', 'maplibre', 'arcgis'];
+            const currentIndex = providers.indexOf(currentProvider);
+            const nextIndex = (currentIndex + 1) % providers.length;
+            currentProvider = providers[nextIndex];
             document.querySelector(`input[value="${currentProvider}"]`).checked = true;
             markerCount = 0;
             polylineCount = 0;

@@ -12,47 +12,89 @@ export class ArcGISProvider implements ProviderConfig {
     }
     
     // Initialize ArcGIS map
-    // const map = new Map({
-    //   basemap: config?.style || "streets-navigation-vector"
-    // });
-    // 
-    // const view = new MapView({
-    //   container: elementId,
-    //   map: map,
-    //   center: config?.center || [0, 0],
-    //   zoom: config?.zoom || 10
-    // });
-    // 
-    // this.map = view;
+    // Note: ArcGIS requires proper module loading system
+    // For demo purposes, we'll use a placeholder implementation
+    console.log('ArcGIS map would be initialized here with:', {
+      container: elementId,
+      center: config?.center || [51.505, -0.09],
+      zoom: config?.zoom || 13,
+      style: config?.style || 'streets-navigation-vector'
+    });
+    
+    // Placeholder map object
+    this.map = {
+      initialized: true,
+      elementId,
+      config,
+      markers: [],
+      polylines: []
+    };
   }
 
   createMarker(options: MarkerOptions): any {
-    // ArcGIS marker implementation
+    if (!this.map) throw new Error('Map not initialized');
+    
+    const marker = {
+      lat: options.lat,
+      lng: options.lng,
+      popup: options.popup,
+      id: Date.now()
+    };
+    
+    this.map.markers.push(marker);
+    console.log('ArcGIS marker would be created:', marker);
+    return marker;
   }
 
   removeMarker(marker: any): void {
-    // Remove ArcGIS marker
+    if (this.map && marker) {
+      const index = this.map.markers.findIndex((m: any) => m.id === marker.id);
+      if (index > -1) {
+        this.map.markers.splice(index, 1);
+        console.log('ArcGIS marker would be removed:', marker);
+      }
+    }
   }
 
   createPolyline(options: PolylineOptions): any {
-    // ArcGIS polyline implementation
+    if (!this.map) throw new Error('Map not initialized');
+    
+    const polyline = {
+      coordinates: options.coordinates,
+      color: options.color || '#3388ff',
+      weight: options.weight || 3,
+      id: Date.now()
+    };
+    
+    this.map.polylines.push(polyline);
+    console.log('ArcGIS polyline would be created:', polyline);
+    return polyline;
   }
 
   removePolyline(polyline: any): void {
-    // Remove ArcGIS polyline
+    if (this.map && polyline) {
+      const index = this.map.polylines.findIndex((p: any) => p.id === polyline.id);
+      if (index > -1) {
+        this.map.polylines.splice(index, 1);
+        console.log('ArcGIS polyline would be removed:', polyline);
+      }
+    }
   }
 
   setView(center: [number, number], zoom: number): void {
-    // Set ArcGIS map view
+    if (this.map) {
+      this.map.config = { ...this.map.config, center, zoom };
+      console.log('ArcGIS map view would be set to:', { center, zoom });
+    }
   }
 
   getCenter(): [number, number] {
-    // Get ArcGIS map center
-    return [0, 0];
+    if (!this.map || !this.map.config) return [0, 0];
+    return this.map.config.center || [51.505, -0.09];
   }
 
   getZoom(): number {
-    // Get ArcGIS map zoom
-    return 0;
+    if (!this.map || !this.map.config) return 13;
+    return this.map.config.zoom || 13;
   }
 }

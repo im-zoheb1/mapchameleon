@@ -1,7 +1,7 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import typescript from '@rollup/plugin-typescript';
-import { terser } from '@rollup/plugin-terser';
+import typescript from 'rollup-plugin-typescript2';
+import terser from '@rollup/plugin-terser';
 
 export default [
   // ES Modules build
@@ -13,9 +13,9 @@ export default [
     },
     external: ['leaflet', 'maplibre-gl'],
     plugins: [
+      typescript(),
       resolve(),
-      commonjs(),
-      typescript()
+      commonjs()
     ]
   },
   // CommonJS build
@@ -27,9 +27,9 @@ export default [
     },
     external: ['leaflet', 'maplibre-gl'],
     plugins: [
+      typescript(),
       resolve(),
-      commonjs(),
-      typescript()
+      commonjs()
     ]
   },
   // UMD build for browsers
@@ -46,9 +46,9 @@ export default [
     },
     external: ['leaflet', 'maplibre-gl'],
     plugins: [
+      typescript(),
       resolve(),
       commonjs(),
-      typescript(),
       terser()
     ]
   }
