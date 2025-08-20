@@ -10,6 +10,14 @@ export class LeafletProvider implements ProviderConfig {
     if (!element) {
       throw new Error(`Element with id '${elementId}' not found`);
     }
+
+    // Destroy existing map if already initialized
+    if (this.map) {
+      this.destroy();
+    }
+
+    // Clear the container to prevent reinitialization errors
+    element.innerHTML = '';
     
     // Initialize Leaflet map
     this.map = (window as any).L.map(elementId).setView(config?.center || [51.505, -0.09], config?.zoom || 13);
@@ -66,5 +74,17 @@ export class LeafletProvider implements ProviderConfig {
 
   getZoom(): number {
     return this.map ? this.map.getZoom() : 0;
+  }
+
+  destroy(): void {
+    if (this.map) {
+      try {
+        // Remove the map and clean up all layers and event listeners
+        this.map.remove();
+        this.map = null;
+      } catch (error) {
+        console.error('Failed to destroy Leaflet map:', error);
+      }
+    }
   }
 }

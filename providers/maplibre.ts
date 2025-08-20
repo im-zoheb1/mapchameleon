@@ -10,6 +10,14 @@ export class MapLibreProvider implements ProviderConfig {
     if (!element) {
       throw new Error(`Element with id '${elementId}' not found`);
     }
+
+    // Destroy existing map if already initialized
+    if (this.map) {
+      this.destroy();
+    }
+
+    // Clear the container to prevent reinitialization errors
+    element.innerHTML = '';
     
     // Initialize MapLibre map
     this.map = new (window as any).maplibregl.Map({
@@ -103,5 +111,17 @@ export class MapLibreProvider implements ProviderConfig {
 
   getZoom(): number {
     return this.map ? this.map.getZoom() : 0;
+  }
+
+  destroy(): void {
+    if (this.map) {
+      try {
+        // Remove the map and clean up all resources
+        this.map.remove();
+        this.map = null;
+      } catch (error) {
+        console.error('Failed to destroy MapLibre map:', error);
+      }
+    }
   }
 }

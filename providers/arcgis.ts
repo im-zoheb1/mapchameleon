@@ -21,6 +21,14 @@ export class ArcGISProvider implements ProviderConfig {
       throw new Error(`Element with id '${elementId}' not found`);
     }
 
+    // Destroy existing map if already initialized
+    if (this.map || this.view) {
+      this.destroy();
+    }
+
+    // Clear the container to prevent reinitialization errors
+    element.innerHTML = '';
+
     try {
       // Check if ArcGIS API is loaded
       if (typeof window.require === 'undefined') {
@@ -329,6 +337,51 @@ export class ArcGISProvider implements ProviderConfig {
     } catch (error) {
       console.error('Failed to get zoom:', error);
       return 13;
+    }
+  }
+
+  destroy(): void {
+    try {
+      // Clear all markers
+      this.markers.forEach(marker => {
+        try {
+          if (this.graphicsLayer) {
+            this.graphicsLayer.remove(marker);
+          }
+        } catch (error) {
+          console.error('Error removing marker during destroy:', error);
+        }
+      });
+      this.markers = [];
+
+      // Clear all polylines
+      this.polylines.forEach(polyline => {
+        try {
+          if (this.graphicsLayer) {
+            this.graphicsLayer.remove(polyline);
+          }
+        } catch (error) {
+          console.error('Error removing polyline during destroy:', error);
+        }
+      });
+      this.polylines = [];
+
+      // Destroy the view
+      if (this.view) {
+        this.view.destroy();
+        this.view = null;
+      }
+
+      // Clear graphics layer
+      if (this.graphicsLayer) {
+        this.graphicsLayer.removeAll();
+        this.graphicsLayer = null;
+      }
+
+      // Clear map reference
+      this.map = null;
+    } catch (error) {
+      console.error('Failed to destroy ArcGIS map:', error);
     }
   }
 }

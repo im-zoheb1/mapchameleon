@@ -64,6 +64,12 @@ export class MapChameleon {
     // This method would need to be implemented by tracking markers/polylines
     // For now, we'll leave it as a placeholder
   }
+
+  destroy() {
+    if (this.provider && typeof (this.provider as any).destroy === 'function') {
+      (this.provider as any).destroy();
+    }
+  }
 }
 
 export async function createChameleon(config: MapConfig): Promise<MapChameleon> {
