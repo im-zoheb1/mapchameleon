@@ -2,10 +2,10 @@
 // Provider Types
 // /////////////////////////////
 export interface ProviderConfig {
-  initialize(elementId: string, config?: MapConfig): void;
-  createMarker(options: MarkerOptions): any;
+  initialize(elementId: string, config?: MapConfig): void | Promise<void>;
+  createMarker(options: MarkerOptions): any | Promise<any>;
   removeMarker(marker: any): void;
-  createPolyline(options: PolylineOptions): any;
+  createPolyline(options: PolylineOptions): any | Promise<any>;
   removePolyline(polyline: any): void;
   setView(center: [number, number], zoom: number): void;
   getCenter(): [number, number];

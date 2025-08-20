@@ -5,6 +5,7 @@ import { ArcGISProvider } from '../providers/arcgis';
 
 export class MapChameleon {
   private provider: ProviderConfig;
+  private initializationPromise: Promise<void>;
 
   constructor(config: MapConfig) {
     if (config.provider === 'leaflet') {
@@ -17,10 +18,18 @@ export class MapChameleon {
       throw new Error(`Unsupported provider: ${config.provider}`);
     }
 
-    this.provider.initialize(
+    this.initializationPromise = this.initialize(config);
+  }
+
+  private async initialize(config: MapConfig): Promise<void> {
+    await this.provider.initialize(
       typeof config.container === 'string' ? config.container : config.container.id || 'map',
       config
     );
+  }
+
+  async waitForInitialization(): Promise<void> {
+    await this.initializationPromise;
   }
 
   addMarker(options: MarkerOptions) {
@@ -57,7 +66,13 @@ export class MapChameleon {
   }
 }
 
-export function createChameleon(config: MapConfig): MapChameleon {
+export async function createChameleon(config: MapConfig): Promise<MapChameleon> {
+  const chameleon = new MapChameleon(config);
+  await chameleon.waitForInitialization();
+  return chameleon;
+}
+
+export function createChameleonSync(config: MapConfig): MapChameleon {
   return new MapChameleon(config);
 }
 
